@@ -1,4 +1,5 @@
 import requests
+import os
 # from pprint import pprint
 
 game_now = requests.get('https://worldcup.sfg.io/matches/current').json()
@@ -16,8 +17,19 @@ try:
     game_time = str(game_now[0]['time'])
 except Exception as _:
     print('game ends')
+    os.system("""
+              osascript -e 'display notification "{}" with title "{}"'
+              """.format('game ends', 'oh'))
 else:
     print('time: ' + game_time)
-    print(home_team_country + ' Vs. ' + away_team_country)
+    country_vs_info = str(home_team_country + ' Vs. ' + away_team_country)
+    print(country_vs_info)
     print(' ' * (len(home_team_country) - 1), end='')
-    print(home_team_goal + '  :  ' + away_team_goal)
+    goal_vs_info = str(home_team_goal + '  :  ' + away_team_goal)
+    print(goal_vs_info)
+
+
+# test mac notification
+    os.system("""
+              osascript -e 'display notification "{}" with title "{}"'
+              """.format(goal_vs_info, country_vs_info))
