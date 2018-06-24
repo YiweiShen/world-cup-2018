@@ -34,7 +34,6 @@ def main():
     while True:
         try:
             country_vs_info, goal_vs_info = cal_country_and_score(game_now[0])
-            game_time = str(game_now[0]['time'])
         except Exception as _:
             print('game ends')
             os.system("""
@@ -57,6 +56,7 @@ def main():
                       osascript -e 'display notification "{}" with title "{}"'
                       """.format(goal_vs_info, country_vs_info))
         else:
+            game_time = str(game_now[0]['time'])
             print('time: ' + game_time)
             print(country_vs_info)
             # print(' ' * (len(home_team_country) - 1), end='')
