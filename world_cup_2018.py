@@ -27,12 +27,11 @@ def is_goal_changed(game):
 
 
 def main():
-    game_now = requests.get('https://worldcup.sfg.io/matches/current').json()
-    # pprint(game_now)
-    # if you want to see all the statistics, pprint it all
-
     while True:
         try:
+            game_now = requests.get('https://worldcup.sfg.io/matches/current').json()
+            # pprint(game_now)
+            # if you want to see all the statistics, pprint it all
             country_vs_info, goal_vs_info = cal_country_and_score(game_now[0])
         except Exception as _:
             print('game ends')
@@ -66,7 +65,8 @@ def main():
                 os.system("""
                           osascript -e 'display notification "{}" with title "{}"'
                           """.format(goal_vs_info, country_vs_info))
-        time.sleep(5)  # time interval for checking result
+        time.sleep(10)
+        # time interval for checking result, be gentle to API
 
 
 if __name__ == '__main__':
