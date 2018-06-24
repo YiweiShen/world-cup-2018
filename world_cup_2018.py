@@ -65,8 +65,10 @@ def main():
                 os.system("""
                           osascript -e 'display notification "{}" with title "{}"'
                           """.format(goal_vs_info, country_vs_info))
-        time.sleep(10)
+        time.sleep(45)
         # time interval for checking result, be gentle to API
+        # https://github.com/estiens/world_cup_json
+        # see RATE LIMITING
 
 
 if __name__ == '__main__':
