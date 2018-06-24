@@ -1,7 +1,10 @@
 import requests
 import os
-# import time
+import time
 # from pprint import pprint
+
+
+goals = -1
 
 
 def cal_country_and_score(game):
@@ -14,43 +17,56 @@ def cal_country_and_score(game):
     return country_vs_info, goal_vs_info
 
 
+def is_goal_changed(game):
+    global goals
+    now_goals = game['home_team']['goals'] + game['away_team']['goals']
+    if now_goals > goals:
+        goals = now_goals
+        return True
+    return False
+
+
 def main():
     game_now = requests.get('https://worldcup.sfg.io/matches/current').json()
     # pprint(game_now)
     # if you want to see all the statistics, pprint it all
-    try:
-        country_vs_info, goal_vs_info = cal_country_and_score(game_now[0])
-        game_time = str(game_now[0]['time'])
-    except Exception as _:
-        print('game ends')
-        os.system("""
-                  osascript -e 'display notification "{}" with title "{}"'
-                  """.format('Game already ends', 'Sorry'))
-        # time.sleep(5)
-        # in case you have a fast internet connection,
-        # you will miss the first notification, that's why sleep
-        games = requests.get('https://worldcup.sfg.io/matches').json()
-        os.system("""
-                  osascript -e 'display notification "{}" with title "{}"'
-                  """.format('Let me fetch the result for you', 'Oh wait'))
-        last_game_index = 0
-        for i, game in enumerate(games):
-            if game['status'] == 'future':
-                last_game_index = i - 1
-                break
-        country_vs_info, goal_vs_info = cal_country_and_score(games[last_game_index])
-        os.system("""
-                  osascript -e 'display notification "{}" with title "{}"'
-                  """.format(goal_vs_info, country_vs_info))
-    else:
-        print('time: ' + game_time)
-        print(country_vs_info)
-        # print(' ' * (len(home_team_country) - 1), end='')
-        print(goal_vs_info)
-    # test mac notification
-        os.system("""
-                  osascript -e 'display notification "{}" with title "{}"'
-                  """.format(goal_vs_info, country_vs_info))
+
+    while True:
+        try:
+            country_vs_info, goal_vs_info = cal_country_and_score(game_now[0])
+            game_time = str(game_now[0]['time'])
+        except Exception as _:
+            print('game ends')
+            os.system("""
+                      osascript -e 'display notification "{}" with title "{}"'
+                      """.format('Game already ends', 'Sorry'))
+            # time.sleep(5)
+            # in case you have a fast internet connection,
+            # you will miss the first notification, that's why sleep
+            games = requests.get('https://worldcup.sfg.io/matches').json()
+            os.system("""
+                      osascript -e 'display notification "{}" with title "{}"'
+                      """.format('Let me fetch the result for you', 'Oh wait'))
+            last_game_index = 0
+            for i, game in enumerate(games):
+                if game['status'] == 'future':
+                    last_game_index = i - 1
+                    break
+            country_vs_info, goal_vs_info = cal_country_and_score(games[last_game_index])
+            os.system("""
+                      osascript -e 'display notification "{}" with title "{}"'
+                      """.format(goal_vs_info, country_vs_info))
+        else:
+            print('time: ' + game_time)
+            print(country_vs_info)
+            # print(' ' * (len(home_team_country) - 1), end='')
+            print(goal_vs_info)
+        # test mac notification
+            if is_goal_changed(game_now[0]):
+                os.system("""
+                          osascript -e 'display notification "{}" with title "{}"'
+                          """.format(goal_vs_info, country_vs_info))
+        time.sleep(5)  # time interval for checking result
 
 
 if __name__ == '__main__':
